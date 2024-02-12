@@ -25,6 +25,10 @@ local codelldb = {
     stopOnEntry = false,
 }
 
+dap.configurations.rust = {
+	codelldb
+}
+
 local dapui = require('dapui')
 
 dapui.setup()
