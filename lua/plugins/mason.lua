@@ -1,10 +1,9 @@
 return {
 	"williamboman/mason.nvim",
 	opts = {
-		{
-			ensure_installed = {
-				"codelldb",
-			},
+		ensure_installed = {
+			"codelldb",
+			"gopls",
 		},
 	},
 }
