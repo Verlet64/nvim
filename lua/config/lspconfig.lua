@@ -1,11 +1,11 @@
 local lspconfig = require("lspconfig")
 
-local on_attach = require("plugins.lspconfig").on_attach
-local capabilities = require("cmp_nvim_lsp").capabilities
+local on_attach_lspconfig = require("plugins.lspconfig").on_attach
+local capabilities_lspconfig = require("cmp_nvim_lsp").capabilities
 
 lspconfig.gopls.setup {
-	on_attach = on_attach,
-	capabilities = capabilities,
+	on_attach = on_attach_lspconfig,
+	capabilities = capabilities_lspconfig,
 	cmd = { "gopls" },
 	filetypes = { "go", "gomod", "gowork", "gotmpl" },
 	root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git"),
@@ -15,6 +15,30 @@ lspconfig.gopls.setup {
 			usePlaceholders = true,
 		},
 	},
+}
+
+lspconfig.lua_ls.setup {
+	  on_init = function(client)
+		local path = client.workspace_folders[1].name
+		if not vim.loop.fs_stat(path..'/.luarc.json') and not vim.loop.fs_stat(path..'/.luarc.jsonc') then
+		client.config.settings = vim.tbl_deep_extend('force', client.config.settings, {
+			Lua = {
+				  runtime = {
+					    version = 'LuaJIT'
+				  },
+				  workspace = {
+					    checkThirdParty = false,
+					    library = {
+					      vim.env.VIMRUNTIME
+					    },
+				  },
+			},
+		})
+		client.capabilities = capabilities_lspconfig
+		client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+		end
+		return true
+	end,
 }
 
 local luasnip = require("luasnip")

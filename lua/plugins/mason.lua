@@ -4,6 +4,7 @@ return {
 		ensure_installed = {
 			"codelldb",
 			"gopls",
+			"lua-language-server",
 		},
 	},
 }
