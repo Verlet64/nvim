@@ -28,3 +28,17 @@ dapgo.setup {
 		build_flags = "",
 	  },
 }
+
+local wk = require('which-key')
+
+wk.register({
+	g = {
+		name = "go",
+		d = {
+			name="debug",
+			t = { function ()
+				require('dap-go').debug_test()
+			end, "test"}
+		}
+	}
+}, { prefix=[[<leader>]]})
