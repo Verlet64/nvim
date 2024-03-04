@@ -41,12 +41,27 @@ lspconfig.lua_ls.setup {
 	end,
 }
 
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function (ev)
+	local wk = require('which-key')
+	local opts = { buffer = ev.buf }
+	wk.register({
+		g = {
+			d = { function () vim.lsp.buf.definition(opts) end, [[Go to definition]] },
+			D = { function () vim.lsp.buf.declaration(opts) end, [[Go to declaration]] },
+			i = { function () vim.lsp.buf.implementation(opts) end, [[Go to implementation]] }
+		}
+	})
+  end
+})
+
 local luasnip = require("luasnip")
 local cmp = require ("cmp")
 
 cmp.setup {
 	snippet = {
-		expand = function(args) 
+		expand = function(args)
 			luasnip.lsp_expand(args.body)
 		end,
 	},
