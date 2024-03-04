@@ -29,6 +29,75 @@ dapgo.setup {
 	  },
 }
 
+
+vim.api.nvim_create_user_command([[GoGet]], function (command)
+	local packages = command.fargs
+
+	for _, package in ipairs(packages) do
+		vim.fn.jobstart(
+			{ "go", "get", package },
+			{
+				on_stdout = function (j, d, e)
+					print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+				end,
+				stderr_buffered = true,
+				on_stderr = function (j, d, e)
+					print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+				end,
+				on_exit = function (j, d, e)
+					print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+				end
+			}
+		)
+	end
+end, {
+	desc = "install go package(s) into the current go project",
+	nargs = "+",
+	complete = function ()
+		print("download complete")
+	end
+})
+
+vim.api.nvim_create_user_command("GoTest", function ()
+	local path = vim.api.nvim_buf_get_name(0)
+
+	vim.fn.jobstart(
+		{ "go", "test", path},
+		{
+			on_stdout = function (j, d, e)
+				print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+			end,
+			stdout_buffered = true,
+			on_stderr = function (j, d, e)
+				print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+			end,
+			stderr_buffered = true,
+			on_exit = function (j, d, e)
+				print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+			end
+		}
+	)
+end, {})
+
+vim.api.nvim_create_user_command("GoTestAll", function ()
+	vim.fn.jobstart(
+		{ "go", "test", "./..."},
+		{
+			on_stdout = function (j, d, e)
+				print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+			end,
+			stdout_buffered = true,
+			on_stderr = function (j, d, e)
+				print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+			end,
+			stderr_buffered = true,
+			on_exit = function (j, d, e)
+				print(vim.inspect(j), vim.inspect(d), vim.inspect(e))
+			end
+		}
+	)
+end, {})
+
 local wk = require('which-key')
 
 wk.register({
