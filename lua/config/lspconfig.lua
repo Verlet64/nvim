@@ -3,7 +3,10 @@ local lspconfig = require("lspconfig")
 local on_attach_lspconfig = require("plugins.lspconfig").on_attach
 local capabilities_lspconfig = require("cmp_nvim_lsp").capabilities
 
-lspconfig.gopls.setup {
+
+local wk = require('which-key')
+
+local gopls_opts = {
 	on_attach = on_attach_lspconfig,
 	capabilities = capabilities_lspconfig,
 	cmd = { "gopls" },
@@ -13,9 +16,20 @@ lspconfig.gopls.setup {
 		gopls = {
 			completeUnimported = true,
 			usePlaceholders = true,
-		},
-	},
+		}
+	}
 }
+
+lspconfig.gopls.setup(gopls_opts)
+vim.api.nvim_create_user_command(
+	'GoBuildTags',
+	function (command)
+		local args = command.fargs
+		gopls_opts.settings.gopls.buildFlags = { "-tags", table.concat(args, ",") }
+		lspconfig.gopls.setup(gopls_opts)
+	end,
+	{ nargs = '+' }
+)
 
 lspconfig.lua_ls.setup {
 	  on_init = function(client)
@@ -44,7 +58,6 @@ lspconfig.lua_ls.setup {
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function (ev)
-	local wk = require('which-key')
 	local opts = { buffer = ev.buf }
 	wk.register({
 		g = {
