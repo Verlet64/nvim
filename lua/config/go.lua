@@ -29,7 +29,6 @@ dapgo.setup {
 	  },
 }
 
-
 vim.api.nvim_create_user_command([[GoGet]], function (command)
 	local packages = command.fargs
 
@@ -57,6 +56,8 @@ end, {
 		print("download complete")
 	end
 })
+
+local build_flags = {}
 
 vim.api.nvim_create_user_command("GoTest", function ()
 	local path = vim.api.nvim_buf_get_name(0)
@@ -97,6 +98,36 @@ vim.api.nvim_create_user_command("GoTestAll", function ()
 		}
 	)
 end, {})
+
+local lspconfig = require("lspconfig")
+local on_attach_lspconfig = require("plugins.lspconfig").on_attach
+local capabilities_lspconfig = require("cmp_nvim_lsp").capabilities
+
+local gopls_opts = {
+	on_attach = on_attach_lspconfig,
+	capabilities = capabilities_lspconfig,
+	cmd = { "gopls" },
+	filetypes = { "go", "gomod", "gowork", "gotmpl" },
+	root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git"),
+	settings = {
+		gopls = {
+			completeUnimported = true,
+			usePlaceholders = true,
+		}
+	}
+}
+
+lspconfig.gopls.setup(gopls_opts)
+vim.api.nvim_create_user_command(
+	'GoBuildTags',
+	function (command)
+		local args = command.fargs
+		build_flags = { "-tags", table.concat(args, ",") }
+		gopls_opts.settings.gopls.buildFlags = build_flags
+		lspconfig.gopls.setup(gopls_opts)
+	end,
+	{ nargs = '+' }
+)
 
 local wk = require('which-key')
 
