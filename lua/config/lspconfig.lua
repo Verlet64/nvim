@@ -36,7 +36,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
 		g = {
 			d = { function () vim.lsp.buf.definition(opts) end, [[Go to definition]] },
 			D = { function () vim.lsp.buf.declaration(opts) end, [[Go to declaration]] },
-			i = { function () vim.lsp.buf.implementation(opts) end, [[Go to implementation]] }
+			i = { function () vim.lsp.buf.implementation(opts) end, [[Go to implementation]] },
+			r = { function () vim.lsp.buf.references(opts) end, [[List references]] }
 		}
 	})
   end
